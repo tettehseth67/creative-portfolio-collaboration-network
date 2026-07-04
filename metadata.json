@@ -1,0 +1,6 @@
+{
+  "name": "Creative Portfolio & Collaboration Network",
+  "description": "A professional social network for creatives, artists, designers, and musicians to showcase portfolios, find collaboration opportunities, and network with other artists.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
