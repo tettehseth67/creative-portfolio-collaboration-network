@@ -193,19 +193,9 @@ export default function Header({
     setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, unread: false } : n));
     setNotificationDropdownOpen(false);
     
-    // Custom action: if notification settings tab is targeted, scroll to it
+    // Custom action: if notification settings tab is targeted, redirect to settings page
     if (notif.tab === "profile") {
-      setCurrentTab("profile");
-      setTimeout(() => {
-        const section = document.getElementById("notification-settings-section");
-        if (section) {
-          section.scrollIntoView({ behavior: "smooth", block: "center" });
-          section.classList.add("ring-2", "ring-indigo-500", "ring-indigo-500/20", "ring-offset-2");
-          setTimeout(() => {
-            section.classList.remove("ring-2", "ring-indigo-500", "ring-indigo-500/20", "ring-offset-2");
-          }, 2000);
-        }
-      }, 250);
+      setCurrentTab("settings");
     } else {
       setCurrentTab(notif.tab);
     }
@@ -214,17 +204,7 @@ export default function Header({
   const handleGoToNotificationSettings = () => {
     setProfileDropdownOpen(false);
     setNotificationDropdownOpen(false);
-    setCurrentTab("profile");
-    setTimeout(() => {
-      const section = document.getElementById("notification-settings-section");
-      if (section) {
-        section.scrollIntoView({ behavior: "smooth", block: "center" });
-        section.classList.add("ring-2", "ring-indigo-500", "ring-indigo-500/20", "ring-offset-2");
-        setTimeout(() => {
-          section.classList.remove("ring-2", "ring-indigo-500", "ring-indigo-500/20", "ring-offset-2");
-        }, 2000);
-      }
-    }, 250);
+    setCurrentTab("settings");
   };
 
   const handleSignOutMock = () => {
@@ -535,12 +515,18 @@ export default function Header({
               id="header-profile-dropdown-btn"
               title="Profile Menu"
             >
-              <img 
-                src={userProfile.avatar} 
-                alt={userProfile.name} 
-                className="h-8 w-8 rounded-full object-cover shadow-xs border border-slate-100"
-                referrerPolicy="no-referrer"
-              />
+              {userProfile.avatar ? (
+                <img 
+                  src={userProfile.avatar} 
+                  alt={userProfile.name} 
+                  className="h-8 w-8 rounded-full object-cover shadow-xs border border-slate-100"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs shadow-xs border border-slate-100">
+                  {userProfile.name ? userProfile.name.charAt(0).toUpperCase() : "U"}
+                </div>
+              )}
             </button>
 
             {/* Profile Dropdown Panel */}
@@ -556,12 +542,18 @@ export default function Header({
                 >
                   {/* Miniature User Card */}
                   <div className="flex flex-col items-center p-4 text-center border-b border-slate-50 bg-slate-50/10 rounded-xl">
-                    <img 
-                      src={userProfile.avatar} 
-                      alt={userProfile.name} 
-                      className="h-14 w-14 rounded-full object-cover shadow-md border-2 border-white ring-2 ring-indigo-500/15"
-                      referrerPolicy="no-referrer"
-                    />
+                    {userProfile.avatar ? (
+                      <img 
+                        src={userProfile.avatar} 
+                        alt={userProfile.name} 
+                        className="h-14 w-14 rounded-full object-cover shadow-md border-2 border-white ring-2 ring-indigo-500/15"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <div className="h-14 w-14 rounded-full bg-indigo-100 text-indigo-700 font-black text-lg flex items-center justify-center border-2 border-white ring-2 ring-indigo-500/15">
+                        {userProfile.name ? userProfile.name.charAt(0).toUpperCase() : "U"}
+                      </div>
+                    )}
                     <span className="font-display text-sm font-bold text-slate-800 mt-2">{userProfile.name}</span>
                     <span className="text-[10px] text-slate-400 font-sans mt-0.5 line-clamp-2 leading-relaxed">
                       {userProfile.headline}

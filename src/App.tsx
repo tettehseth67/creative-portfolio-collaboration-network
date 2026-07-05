@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { CreativeProfile, Post, CollaborationProject, Conversation, CollabApplication } from "./types";
 import {
   INITIAL_USER_PROFILE,
@@ -19,6 +20,7 @@ import Portfolios from "./components/Portfolios";
 import CollaborationHub from "./components/CollaborationHub";
 import Messaging from "./components/Messaging";
 import MyProfile from "./components/MyProfile";
+import NotificationSettings from "./components/NotificationSettings";
 
 export default function App() {
   // Navigation active tab
@@ -193,85 +195,106 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main className="flex-grow pb-20 sm:pb-0">
-        {currentTab === "feed" && (
-          <HomeFeed
-            userProfile={userProfile}
-            posts={posts}
-            setPosts={setPosts}
-            searchQuery={searchQuery}
-            onNavigateToProfile={() => {
-              setCurrentTab("profile");
-              setProfileSubTab("details");
-            }}
-            onStartCollabChat={handleStartCollabChat}
-            bookmarkedPostIds={bookmarkedPostIds}
-            onToggleBookmarkPost={handleToggleBookmarkPost}
-          />
-        )}
+      <main className={`flex-grow ${currentTab === "messaging" ? "h-[calc(100vh-4rem)] overflow-hidden" : "pb-20 sm:pb-0"}`}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentTab}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="w-full h-full"
+          >
+            {currentTab === "feed" && (
+              <HomeFeed
+                userProfile={userProfile}
+                posts={posts}
+                setPosts={setPosts}
+                searchQuery={searchQuery}
+                onNavigateToProfile={() => {
+                  setCurrentTab("profile");
+                  setProfileSubTab("details");
+                }}
+                onStartCollabChat={handleStartCollabChat}
+                bookmarkedPostIds={bookmarkedPostIds}
+                onToggleBookmarkPost={handleToggleBookmarkPost}
+              />
+            )}
 
-        {currentTab === "portfolios" && (
-          <Portfolios
-            profiles={profiles}
-            setProfiles={setProfiles}
-            searchQuery={searchQuery}
-            onStartCollabChat={handleStartCollabChat}
-            userProfile={userProfile}
-          />
-        )}
+            {currentTab === "portfolios" && (
+              <Portfolios
+                profiles={profiles}
+                setProfiles={setProfiles}
+                searchQuery={searchQuery}
+                onStartCollabChat={handleStartCollabChat}
+                userProfile={userProfile}
+              />
+            )}
 
-        {currentTab === "collaborations" && (
-          <CollaborationHub
-            userProfile={userProfile}
-            collabs={collabs}
-            setCollabs={setCollabs}
-            applications={applications}
-            setApplications={setApplications}
-            searchQuery={searchQuery}
-            onStartCollabChat={handleStartCollabChat}
-            bookmarkedCollabIds={bookmarkedCollabIds}
-            onToggleBookmarkCollab={handleToggleBookmarkCollab}
-          />
-        )}
+            {currentTab === "collaborations" && (
+              <CollaborationHub
+                userProfile={userProfile}
+                collabs={collabs}
+                setCollabs={setCollabs}
+                applications={applications}
+                setApplications={setApplications}
+                searchQuery={searchQuery}
+                onStartCollabChat={handleStartCollabChat}
+                bookmarkedCollabIds={bookmarkedCollabIds}
+                onToggleBookmarkCollab={handleToggleBookmarkCollab}
+              />
+            )}
 
-        {currentTab === "messaging" && (
-          <Messaging
-            userProfile={userProfile}
-            conversations={conversations}
-            setConversations={setConversations}
-            activeConversationId={activeConversationId}
-            setActiveConversationId={setActiveConversationId}
-          />
-        )}
+            {currentTab === "messaging" && (
+              <Messaging
+                userProfile={userProfile}
+                conversations={conversations}
+                setConversations={setConversations}
+                activeConversationId={activeConversationId}
+                setActiveConversationId={setActiveConversationId}
+              />
+            )}
 
-        {currentTab === "profile" && (
-          <MyProfile
-            userProfile={userProfile}
-            setUserProfile={setUserProfile}
-            bookmarkedPostIds={bookmarkedPostIds}
-            bookmarkedCollabIds={bookmarkedCollabIds}
-            onToggleBookmarkPost={handleToggleBookmarkPost}
-            onToggleBookmarkCollab={handleToggleBookmarkCollab}
-            posts={posts}
-            collabs={collabs}
-            initialSubTab={profileSubTab}
-            setInitialSubTab={setProfileSubTab}
-            onStartCollabChat={handleStartCollabChat}
-          />
-        )}
+            {currentTab === "profile" && (
+              <MyProfile
+                userProfile={userProfile}
+                setUserProfile={setUserProfile}
+                bookmarkedPostIds={bookmarkedPostIds}
+                bookmarkedCollabIds={bookmarkedCollabIds}
+                onToggleBookmarkPost={handleToggleBookmarkPost}
+                onToggleBookmarkCollab={handleToggleBookmarkCollab}
+                posts={posts}
+                collabs={collabs}
+                initialSubTab={profileSubTab}
+                setInitialSubTab={setProfileSubTab}
+                onStartCollabChat={handleStartCollabChat}
+              />
+            )}
+
+            {currentTab === "settings" && (
+              <NotificationSettings
+                userProfile={userProfile}
+                setUserProfile={setUserProfile}
+                onBack={() => setCurrentTab("profile")}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Minimalistic professional footer */}
-      <footer className="border-t border-slate-100 bg-white py-6 text-center text-xs text-slate-400">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <span>© 2026 ArtCollab Professional Creative Network. Empowering the global canvas of co-creation.</span>
-          <div className="flex gap-4">
-            <button onClick={() => setCurrentTab("feed")} className="hover:text-indigo-600 transition-colors">Workspace</button>
-            <button onClick={() => setCurrentTab("portfolios")} className="hover:text-indigo-600 transition-colors">Bento Showcases</button>
-            <button onClick={() => setCurrentTab("collaborations")} className="hover:text-indigo-600 transition-colors">Opportunities</button>
+      {currentTab !== "messaging" && (
+        <footer className="border-t border-slate-100 bg-white py-6 text-center text-xs text-slate-400">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <span>© 2026 ArtCollab Professional Creative Network. Empowering the global canvas of co-creation.</span>
+            <div className="flex gap-4">
+              <button onClick={() => setCurrentTab("feed")} className="hover:text-indigo-600 transition-colors">Workspace</button>
+              <button onClick={() => setCurrentTab("portfolios")} className="hover:text-indigo-600 transition-colors">Bento Showcases</button>
+              <button onClick={() => setCurrentTab("collaborations")} className="hover:text-indigo-600 transition-colors">Opportunities</button>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }

@@ -475,7 +475,13 @@ export default function CollaborationHub({
                       {/* Top: Owner & Discipline tag */}
                       <div className="flex justify-between items-start gap-4">
                         <div className="flex gap-3">
-                          <img src={collab.owner.avatar} alt={collab.owner.name} className="h-9 w-9 rounded-xl object-cover border border-slate-50" />
+                          {collab.owner.avatar ? (
+                            <img src={collab.owner.avatar} alt={collab.owner.name} className="h-9 w-9 rounded-xl object-cover border border-slate-50 shrink-0" />
+                          ) : (
+                            <div className="h-9 w-9 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs border border-slate-50 shrink-0 select-none">
+                              {collab.owner.name ? collab.owner.name.charAt(0).toUpperCase() : "U"}
+                            </div>
+                          )}
                           <div>
                             <h4 className="font-display text-sm font-bold text-slate-800 hover:text-indigo-600 cursor-pointer">{collab.owner.name}</h4>
                             <p className="text-[10px] text-slate-400 line-clamp-1">{collab.owner.headline}</p>

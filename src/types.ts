@@ -34,6 +34,7 @@ export interface FeaturedProject {
   imageUrl: string;
   category: string;
   likesCount: number;
+  videoUrl?: string;
 }
 
 export interface Post {
@@ -94,6 +95,7 @@ export interface Message {
   milestoneTitle?: string;
   milestoneStatus?: "pending" | "approved" | "declined";
   timestamp: string;
+  actions?: string[];
 }
 
 export interface Conversation {
@@ -105,10 +107,12 @@ export interface Conversation {
     headline: string;
     discipline: string;
     isOnline: boolean;
+    pronouns?: string;
   };
   messages: Message[];
   lastMessageTime: string;
   unreadCount: number;
+  isStarred?: boolean;
 }
 
 export interface CollabApplication {

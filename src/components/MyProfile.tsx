@@ -5,7 +5,7 @@
 
 import React, { useState } from "react";
 import { CreativeProfile, FeaturedProject, Post, CollaborationProject } from "../types";
-import { MapPin, Globe, ExternalLink, Mail, Edit, Plus, Trash2, Camera, Compass, Award, Briefcase, PlusCircle, Check, Palette, CheckCircle, TrendingUp, Eye, ThumbsUp, Calendar, Bookmark, MessageSquare, Sparkles, Users } from "lucide-react";
+import { MapPin, Globe, ExternalLink, Mail, Edit, Plus, Trash2, Camera, Compass, Award, Briefcase, PlusCircle, Check, Palette, CheckCircle, TrendingUp, Eye, ThumbsUp, Calendar, Bookmark, MessageSquare, Sparkles, Users, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
@@ -229,6 +229,32 @@ export default function MyProfile({
     }
   };
 
+  // Avatar update states
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+
+  const handleAvatarFileChange = (file: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file (PNG, JPG, JPEG, GIF, WebP).");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image size exceeds the 5MB platform threshold.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setUserProfile({
+          ...userProfile,
+          avatar: e.target.result as string
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   // Edit fields
   const [editName, setEditName] = useState(userProfile.name);
   const [editHeadline, setEditHeadline] = useState(userProfile.headline);
@@ -241,6 +267,7 @@ export default function MyProfile({
   const [projTitle, setProjTitle] = useState("");
   const [projDesc, setProjDesc] = useState("");
   const [projImage, setProjImage] = useState("");
+  const [projVideoUrl, setProjVideoUrl] = useState("");
   const [projCategory, setProjCategory] = useState("Creative Coding");
 
   // Portfolio upload improvements (Drag & Drop + Progress simulation)
@@ -333,7 +360,8 @@ export default function MyProfile({
       description: projDesc,
       imageUrl: projImage || "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
       category: projCategory,
-      likesCount: 0
+      likesCount: 0,
+      videoUrl: projVideoUrl.trim() || undefined
     };
 
     setUserProfile({
@@ -345,6 +373,7 @@ export default function MyProfile({
     setProjTitle("");
     setProjDesc("");
     setProjImage("");
+    setProjVideoUrl("");
   };
 
   const handleDeleteProject = (projId: string) => {
@@ -739,14 +768,64 @@ export default function MyProfile({
           {/* Profile particulars segment */}
           <div className="relative px-6 pb-6 md:px-8">
             {/* Avatar overlapping */}
-            <div className="relative -mt-16 inline-block">
-              <div className="h-32 w-32 overflow-hidden rounded-2xl border-4 border-white bg-slate-100 shadow-lg">
-                <img src={userProfile.avatar} alt={userProfile.name} className="h-full w-full object-cover" />
+            <div className="relative -mt-16 inline-block group/avatar">
+              <div className="h-32 w-32 overflow-hidden rounded-2xl border-4 border-white bg-slate-100 shadow-lg relative">
+                {userProfile.avatar ? (
+                  <img src={userProfile.avatar} alt={userProfile.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center bg-indigo-100 text-indigo-700 font-display text-3xl font-black select-none">
+                    {userProfile.name ? userProfile.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) : "U"}
+                  </div>
+                )}
+                
+                {/* Dual action overlay on hover */}
+                <div className="absolute inset-0 bg-slate-950/65 opacity-0 group-hover/avatar:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1.5">
+                  <button
+                    onClick={() => document.getElementById("direct-avatar-upload")?.click()}
+                    className="rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white p-1 px-2.5 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                    title="Upload Profile Picture"
+                    id="direct-avatar-upload-btn"
+                  >
+                    <Upload size={10} />
+                    <span>Upload</span>
+                  </button>
+                  {userProfile.avatar && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setUserProfile({
+                          ...userProfile,
+                          avatar: ""
+                        });
+                      }}
+                      className="rounded-lg bg-rose-600 hover:bg-rose-700 text-white p-1 px-2.5 text-[10px] font-bold transition-all flex items-center gap-1 cursor-pointer"
+                      title="Delete Profile Picture"
+                      id="delete-avatar-btn"
+                    >
+                      <Trash2 size={10} />
+                      <span>Delete</span>
+                    </button>
+                  )}
+                </div>
               </div>
+
+              {/* Hidden Direct File Input */}
+              <input 
+                type="file" 
+                id="direct-avatar-upload" 
+                accept="image/*" 
+                className="hidden" 
+                onChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    handleAvatarFileChange(e.target.files[0]);
+                  }
+                }}
+              />
+
               <button 
-                onClick={() => setIsCameraActive(true)}
-                className="absolute bottom-1 right-1 rounded-full bg-white p-2 text-slate-500 hover:text-indigo-600 hover:scale-105 active:scale-95 shadow-md cursor-pointer transition-all"
-                title="Update Profile Picture (Camera Access)"
+                onClick={() => setIsAvatarModalOpen(true)}
+                className="absolute bottom-1 right-1 rounded-full bg-white p-2 text-slate-600 hover:text-indigo-600 hover:scale-105 active:scale-95 shadow-md cursor-pointer transition-all flex items-center justify-center border border-slate-100"
+                title="Update or Delete Profile Photo"
                 id="profile-avatar-camera-btn"
               >
                 <Camera size={14} />
@@ -865,8 +944,29 @@ export default function MyProfile({
                   exit={{ opacity: 0, scale: 0.95 }}
                   className="group relative overflow-hidden rounded-xl border border-slate-100 bg-white shadow-xs"
                 >
-                  <div className="aspect-video overflow-hidden bg-slate-50">
-                    <img src={proj.imageUrl} alt={proj.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-102" />
+                  <div className="aspect-video overflow-hidden bg-slate-50 relative">
+                    {proj.videoUrl ? (
+                      <>
+                        <video 
+                          src={proj.videoUrl} 
+                          poster={proj.imageUrl} 
+                          autoPlay 
+                          loop 
+                          muted 
+                          playsInline 
+                          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-102" 
+                        />
+                        <div className="absolute top-2.5 left-2.5 z-10 rounded-md bg-slate-950/75 backdrop-blur-xs px-2 py-0.5 text-[8px] font-mono font-extrabold tracking-wider text-emerald-400 flex items-center gap-1 border border-emerald-500/20">
+                          <span className="relative flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                          </span>
+                          MOTION PREVIEW
+                        </div>
+                      </>
+                    ) : (
+                      <img src={proj.imageUrl} alt={proj.title} className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-102" />
+                    )}
                   </div>
                   <div className="p-4">
                     <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[9px] font-bold text-indigo-700">
@@ -1364,6 +1464,41 @@ export default function MyProfile({
                   />
                 </div>
 
+                <div>
+                  <label className="text-xs font-bold text-slate-600 block mb-1">Video Clip URL (optional, for motion & animation)</label>
+                  <input
+                    type="url"
+                    placeholder="e.g. https://example.com/loop.mp4"
+                    value={projVideoUrl}
+                    onChange={(e) => setProjVideoUrl(e.target.value)}
+                    className="w-full rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-xs text-slate-800 outline-hidden focus:border-indigo-400 focus:bg-white"
+                  />
+                  <div className="mt-1.5 flex flex-wrap gap-1.5 items-center">
+                    <span className="text-[9px] font-bold text-slate-400 font-mono">MOTION PRESETS:</span>
+                    <button
+                      type="button"
+                      onClick={() => setProjVideoUrl("https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-circuit-loop-43188-large.mp4")}
+                      className="rounded-md bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 text-[9px] font-bold text-indigo-600 transition-colors cursor-pointer"
+                    >
+                      Circuit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setProjVideoUrl("https://assets.mixkit.co/videos/preview/mixkit-blue-ink-swirling-in-water-43339-large.mp4")}
+                      className="rounded-md bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 text-[9px] font-bold text-indigo-600 transition-colors cursor-pointer"
+                    >
+                      Fluid
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setProjVideoUrl("https://assets.mixkit.co/videos/preview/mixkit-cyberpunk-neon-city-scenery-at-night-42289-large.mp4")}
+                      className="rounded-md bg-indigo-50 hover:bg-indigo-100 px-2 py-0.5 text-[9px] font-bold text-indigo-600 transition-colors cursor-pointer"
+                    >
+                      Cyberpunk
+                    </button>
+                  </div>
+                </div>
+
                 {/* Upload or Choose Canvas Style Section */}
                 <div className="space-y-3">
                   <label className="text-xs font-bold text-slate-700 block">
@@ -1497,6 +1632,161 @@ export default function MyProfile({
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Unified Avatar Editor Modal (Upload + Delete + Camera + Presets) */}
+      <AnimatePresence>
+        {isAvatarModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setIsAvatarModalOpen(false)}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-xs"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-2xl"
+              id="avatar-manager-modal"
+            >
+              <div className="text-center mb-5">
+                <h3 className="font-display text-base font-bold text-slate-900 mb-1">
+                  Update Profile Avatar
+                </h3>
+                <p className="text-[10px] text-slate-400">
+                  Select a new photo file, capture a fresh portrait with your camera, or clear the current image.
+                </p>
+              </div>
+
+              {/* Current Preview vs Upload / Action Controls */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-6 p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <div className="h-16 w-16 overflow-hidden rounded-xl border-2 border-white shadow-md shrink-0">
+                    {userProfile.avatar ? (
+                      <img src={userProfile.avatar} alt="Current Preview" className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-indigo-100 text-indigo-700 font-display text-xl font-black select-none">
+                        {userProfile.name ? userProfile.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2) : "U"}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <h4 className="text-xs font-bold text-slate-700">Currently Active Avatar</h4>
+                    <p className="text-[10px] text-slate-400 mt-0.5">
+                      {userProfile.avatar ? "Custom high-fidelity photo asset loaded" : "Default letter initials placeholder active"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 font-sans">
+                  {/* File Upload Trigger */}
+                  <label className="flex flex-col items-center justify-center border-2 border-dashed border-slate-200 hover:border-indigo-400 bg-slate-50 hover:bg-white rounded-xl p-5 cursor-pointer transition-all group/upload">
+                    <Upload size={20} className="text-slate-400 group-hover/upload:text-indigo-600 transition-colors mb-1.5 animate-bounce" />
+                    <span className="text-xs font-bold text-slate-800">Upload Photo File</span>
+                    <span className="text-[9px] text-slate-400 mt-0.5">PNG, JPG, WebP (Max 5MB)</span>
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                          handleAvatarFileChange(e.target.files[0]);
+                          setIsAvatarModalOpen(false);
+                        }
+                      }}
+                    />
+                  </label>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Camera snapshot */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAvatarModalOpen(false);
+                        setIsCameraActive(true);
+                      }}
+                      className="flex items-center justify-center gap-1.5 rounded-xl border border-slate-100 bg-slate-50 py-3 px-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+                    >
+                      <Camera size={14} className="text-indigo-600" />
+                      <span>Take Photo</span>
+                    </button>
+
+                    {/* Delete action */}
+                    <button
+                      type="button"
+                      disabled={!userProfile.avatar}
+                      onClick={() => {
+                        setUserProfile({
+                          ...userProfile,
+                          avatar: ""
+                        });
+                        setIsAvatarModalOpen(false);
+                      }}
+                      className={`flex items-center justify-center gap-1.5 rounded-xl border py-3 px-2 text-xs font-bold transition-all cursor-pointer ${
+                        userProfile.avatar 
+                          ? "bg-rose-50 border-rose-100 text-rose-600 hover:bg-rose-100" 
+                          : "bg-slate-50 border-slate-100 text-slate-300 cursor-not-allowed"
+                      }`}
+                    >
+                      <Trash2 size={14} />
+                      <span>Delete Photo</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Preset Avatars */}
+                <div className="mt-4 pt-4 border-t border-slate-100">
+                  <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400 block mb-2 text-left">
+                    Or select a pre-rendered portrait persona:
+                  </span>
+                  <div className="flex gap-2 justify-center">
+                    {[
+                      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+                      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+                      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=150&q=80",
+                      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80"
+                    ].map((avatarUrl, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setUserProfile({
+                            ...userProfile,
+                            avatar: avatarUrl
+                          });
+                          setIsAvatarModalOpen(false);
+                        }}
+                        className={`relative h-11 w-11 rounded-xl overflow-hidden border-2 transition-all ${
+                          userProfile.avatar === avatarUrl ? "border-indigo-600 scale-95" : "border-slate-100 hover:scale-105 hover:border-slate-300"
+                        }`}
+                      >
+                        <img src={avatarUrl} alt="Portrait choice" className="h-full w-full object-cover" />
+                        {userProfile.avatar === avatarUrl && (
+                          <div className="absolute inset-0 bg-indigo-600/20 flex items-center justify-center text-indigo-600">
+                            <Check size={14} strokeWidth={3} />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => setIsAvatarModalOpen(false)}
+                  className="rounded-xl border border-slate-100 px-4 py-2 text-xs font-semibold text-slate-500 hover:bg-slate-50 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
             </motion.div>
           </motion.div>
         )}

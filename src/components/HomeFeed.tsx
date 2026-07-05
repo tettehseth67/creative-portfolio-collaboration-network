@@ -199,8 +199,14 @@ export default function HomeFeed({
             </div>
             
             <div className="relative px-6 pb-6 text-center">
-              <div className="absolute top-0 left-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border-4 border-white bg-slate-100 shadow-sm">
-                <img src={userProfile.avatar} alt={userProfile.name} className="h-full w-full object-cover" />
+              <div className="absolute top-0 left-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-2xl border-4 border-white bg-slate-100 shadow-sm flex items-center justify-center">
+                {userProfile.avatar ? (
+                  <img src={userProfile.avatar} alt={userProfile.name} className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xl">
+                    {userProfile.name ? userProfile.name.charAt(0).toUpperCase() : "U"}
+                  </div>
+                )}
               </div>
               
               <div className="pt-10">
@@ -266,7 +272,13 @@ export default function HomeFeed({
           {/* Creative Post Publisher */}
           <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-xs">
             <div className="flex gap-4">
-              <img src={userProfile.avatar} alt={userProfile.name} className="h-10 w-10 rounded-xl object-cover" />
+              {userProfile.avatar ? (
+                <img src={userProfile.avatar} alt={userProfile.name} className="h-10 w-10 rounded-xl object-cover" />
+              ) : (
+                <div className="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm border shrink-0">
+                  {userProfile.name ? userProfile.name.charAt(0).toUpperCase() : "U"}
+                </div>
+              )}
               <div className="w-full">
                 <textarea
                   placeholder="Share a project draft, sketches, or seek co-creators..."
@@ -389,7 +401,13 @@ export default function HomeFeed({
                   {/* Author Header */}
                   <div className="flex justify-between">
                     <div className="flex gap-3">
-                      <img src={post.author.avatar} alt={post.author.name} className="h-10 w-10 rounded-xl object-cover" />
+                      {post.author.avatar ? (
+                        <img src={post.author.avatar} alt={post.author.name} className="h-10 w-10 rounded-xl object-cover" />
+                      ) : (
+                        <div className="h-10 w-10 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm border shrink-0">
+                          {post.author.name ? post.author.name.charAt(0).toUpperCase() : "U"}
+                        </div>
+                      )}
                       <div>
                         <h4 className="font-display text-sm font-bold text-slate-800">{post.author.name}</h4>
                         <p className="text-[11px] text-slate-500 line-clamp-1">{post.author.headline}</p>
@@ -556,7 +574,13 @@ export default function HomeFeed({
                       <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
                         {post.comments.map((comment) => (
                           <div key={comment.id} className="flex gap-2 text-xs">
-                            <img src={comment.authorAvatar} alt={comment.authorName} className="h-7 w-7 rounded-lg object-cover" />
+                           {comment.authorAvatar ? (
+                             <img src={comment.authorAvatar} alt={comment.authorName} className="h-7 w-7 rounded-lg object-cover" />
+                           ) : (
+                             <div className="h-7 w-7 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs border shrink-0">
+                               {comment.authorName ? comment.authorName.charAt(0).toUpperCase() : "U"}
+                             </div>
+                           )}
                             <div className="flex-1 rounded-xl bg-slate-50 p-2.5">
                               <div className="flex items-center justify-between">
                                 <span className="font-bold text-slate-800">{comment.authorName}</span>
@@ -574,7 +598,13 @@ export default function HomeFeed({
 
                     {/* New Comment Input */}
                     <div className="flex gap-2 pt-2">
-                      <img src={userProfile.avatar} alt={userProfile.name} className="h-7 w-7 rounded-lg object-cover" />
+                      {userProfile.avatar ? (
+                        <img src={userProfile.avatar} alt={userProfile.name} className="h-7 w-7 rounded-lg object-cover" />
+                      ) : (
+                        <div className="h-7 w-7 rounded-lg bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-xs border shrink-0">
+                          {userProfile.name ? userProfile.name.charAt(0).toUpperCase() : "U"}
+                        </div>
+                      )}
                       <div className="relative flex-1">
                         <input
                           type="text"

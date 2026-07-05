@@ -38,6 +38,7 @@ export default function Portfolios({
     images: string[];
     creativeId: string;
     creativeName: string;
+    videoUrl?: string;
   } | null>(null);
   const [activeSlideIdx, setActiveSlideIdx] = useState(0);
   const [isAutoplayActive, setIsAutoplayActive] = useState(false);
@@ -181,6 +182,7 @@ export default function Portfolios({
             title: "The Cyber Sentry", 
             desc: "Digital sculpture in Unreal Engine 5 with procedural neon texturing", 
             url: "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80",
+            videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-cyberpunk-neon-city-scenery-at-night-42289-large.mp4",
             images: [
               "https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=600&q=80",
               "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
@@ -300,6 +302,7 @@ export default function Portfolios({
             title: "Fluid Menu WebGL", 
             desc: "Dynamic interaction test bed, GPU-bound fragment shaders and particle physics", 
             url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
+            videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-blue-ink-swirling-in-water-43339-large.mp4",
             images: [
               "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
               "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=600&q=80",
@@ -334,6 +337,7 @@ export default function Portfolios({
             title: "YAW Automation Hub", 
             desc: "Sleek react dashboard featuring automated API flows and responsive graphs", 
             url: "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=600&q=80",
+            videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-circuit-loop-43188-large.mp4",
             images: [
               "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=600&q=80",
               "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
@@ -344,8 +348,9 @@ export default function Portfolios({
             title: "Shader-Bound Audio Waves", 
             desc: "Generative particle simulator on visual audio trigger using modern Web Audio APIs", 
             url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
+            videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-glowing-particles-on-a-black-background-41846-large.mp4",
             images: [
-              "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
+              "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=crop&fit=crop&w=600&q=80",
               "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=600&q=80",
               "https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=600&q=80"
             ]
@@ -533,11 +538,17 @@ export default function Portfolios({
                 {/* Profile header part */}
                 <div className={viewMode === "list" ? "flex-1 md:max-w-xs" : ""}>
                   <div className="flex gap-3 items-start">
-                    <img 
-                      src={creative.avatar} 
-                      alt={creative.name} 
-                      className="h-12 w-12 rounded-xl object-cover border border-slate-50" 
-                    />
+                    {creative.avatar ? (
+                      <img 
+                        src={creative.avatar} 
+                        alt={creative.name} 
+                        className="h-12 w-12 rounded-xl object-cover border border-slate-50 shrink-0" 
+                      />
+                    ) : (
+                      <div className="h-12 w-12 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm border border-slate-100 shrink-0 select-none">
+                        {creative.name ? creative.name.charAt(0).toUpperCase() : "U"}
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <h3 className="font-display text-base font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
                         {creative.name}
@@ -848,7 +859,8 @@ export default function Portfolios({
                               url: item.url,
                               images: item.images || [item.url],
                               creativeId: selectedCreative.id,
-                              creativeName: selectedCreative.name
+                              creativeName: selectedCreative.name,
+                              videoUrl: item.videoUrl
                             });
                             setActiveSlideIdx(0);
                             setIsAutoplayActive(false);
@@ -857,7 +869,28 @@ export default function Portfolios({
                             isLarge ? "col-span-2 h-48" : "h-36"
                           }`}
                         >
-                          <img src={item.url} alt={item.title} className="h-full w-full object-cover" />
+                          {item.videoUrl ? (
+                            <>
+                              <video 
+                                src={item.videoUrl} 
+                                poster={item.url} 
+                                autoPlay 
+                                loop 
+                                muted 
+                                playsInline 
+                                className="h-full w-full object-cover" 
+                              />
+                              <div className="absolute top-3 left-3 z-10 rounded-md bg-slate-950/75 backdrop-blur-xs px-2 py-0.5 text-[7px] font-mono font-extrabold tracking-wider text-emerald-400 flex items-center gap-1 border border-emerald-500/20">
+                                <span className="relative flex h-1 w-1">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-1 w-1 bg-emerald-500"></span>
+                                </span>
+                                MOTION
+                              </div>
+                            </>
+                          ) : (
+                            <img src={item.url} alt={item.title} className="h-full w-full object-cover" />
+                          )}
                           
                           {/* Heart/Like Action Overlay - Glassmorphic Pill */}
                           <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold shadow-md backdrop-blur-xs transition-all hover:bg-white border border-white/50">
@@ -932,18 +965,47 @@ export default function Portfolios({
 
               {/* Left Side: Responsive Image Display & Navigation */}
               <div className="relative flex-1 bg-slate-950 flex items-center justify-center h-[50%] md:h-full overflow-hidden group">
-                {/* Main Image with animation on change */}
+                {/* Main Image or Video with animation on change */}
                 <AnimatePresence mode="wait">
-                  <motion.img
-                    key={activeSlideIdx}
-                    src={activeProject.images[activeSlideIdx]}
-                    alt={`${activeProject.title} slide ${activeSlideIdx + 1}`}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.3 }}
-                    className="h-full w-full object-contain"
-                  />
+                  {activeSlideIdx === 0 && activeProject.videoUrl ? (
+                    <motion.div
+                      key="video"
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.98 }}
+                      transition={{ duration: 0.3 }}
+                      className="h-full w-full relative flex items-center justify-center"
+                    >
+                      <video
+                        src={activeProject.videoUrl}
+                        poster={activeProject.images[0]}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        controls
+                        className="h-full w-full object-contain"
+                      />
+                      <div className="absolute top-4 left-4 z-10 rounded-md bg-emerald-500/90 backdrop-blur-xs px-2.5 py-1 text-[8px] font-mono font-extrabold tracking-wider text-white flex items-center gap-1.5 shadow-md border border-white/10">
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                          <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white"></span>
+                        </span>
+                        ACTIVE MOTION REEL
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.img
+                      key={activeSlideIdx}
+                      src={activeProject.images[activeSlideIdx]}
+                      alt={`${activeProject.title} slide ${activeSlideIdx + 1}`}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.3 }}
+                      className="h-full w-full object-contain"
+                    />
+                  )}
                 </AnimatePresence>
 
                 {/* Left Navigation Arrow */}
@@ -1066,6 +1128,11 @@ export default function Portfolios({
                             }`}
                           >
                             <img src={img} alt="Thumbnail preview" className="h-full w-full object-cover" />
+                            {i === 0 && activeProject.videoUrl && (
+                              <div className="absolute inset-0 bg-slate-950/40 flex items-center justify-center text-white">
+                                <Play size={12} fill="currentColor" className="ml-0.5" />
+                              </div>
+                            )}
                           </button>
                         ))}
                       </div>

@@ -41,7 +41,8 @@ export const INITIAL_USER_PROFILE: CreativeProfile = {
       description: "Interactive GPU fluid simulator responding to user mouse coordinates, optimized for custom web layouts.",
       imageUrl: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=600&q=80",
       category: "Creative Coding",
-      likesCount: 24
+      likesCount: 24,
+      videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-abstract-digital-technology-circuit-loop-43188-large.mp4"
     }
   ],
   emailSettings: {
@@ -293,6 +294,42 @@ export const INITIAL_COLLAB_PROJECTS: CollaborationProject[] = [
 
 export const INITIAL_CONVERSATIONS: Conversation[] = [
   {
+    id: "conv-sophie",
+    participant: {
+      id: "creative-sophie",
+      name: "Sophie Z. Novati",
+      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&h=150&q=80",
+      headline: "Founder @ Formation | Building a more equitable tech industry",
+      discipline: "Technical Recruiting & Founder",
+      isOnline: true,
+      pronouns: "(She/Her)"
+    },
+    messages: [
+      {
+        id: "m-sophie-1",
+        senderId: "creative-sophie",
+        text: "process there. It's actually been our top placement recently! Given all of the super recent first-party data we have about what it takes to succeed in that interview process, we have a Meta specific prep track for folks interested. Would you like to apply and speak to one of our recruiters?",
+        timestamp: "2026-07-04T21:05:00Z",
+        actions: ["Apply", "Show me recent placements"]
+      },
+      {
+        id: "m-sophie-2",
+        senderId: "user-seth",
+        text: "Show me recent placements",
+        timestamp: "2026-07-04T21:07:00Z"
+      },
+      {
+        id: "m-sophie-3",
+        senderId: "creative-sophie",
+        text: "Hope you got the info you needed! If you'd like to apply, we'd love to see your application come through!",
+        timestamp: "2026-07-04T21:07:00Z",
+        actions: ["Apply today"]
+      }
+    ],
+    lastMessageTime: "2026-07-04T21:07:00Z",
+    unreadCount: 0
+  },
+  {
     id: "conv-1",
     participant: {
       id: "creative-anya",
@@ -335,7 +372,7 @@ export const INITIAL_CONVERSATIONS: Conversation[] = [
       }
     ],
     lastMessageTime: "2026-07-03T14:30:00Z",
-    unreadCount: 1
+    unreadCount: 18
   },
   {
     id: "conv-2",
